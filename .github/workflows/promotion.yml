@@ -37,11 +37,11 @@ jobs:
           cd apps/app-demo/overlays/${{ inputs.vers }}
           kustomize edit set image app-demo=${{ steps.version.outputs.image }}
 
-      - name: Installer Kyverno CLI (dernière version)
+      - name: Installer Kyverno CLI (version du cluster)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VERSION=$(gh release view -R kyverno/kyverno --json tagName -q .tagName)
+          VERSION=v1.19.2   # même version que le chart Kyverno 3.9.2 du cluster (la v1.20 n'exécute plus les ClusterPolicy)
           curl -sSL -o kyverno.tar.gz \
             "https://github.com/kyverno/kyverno/releases/download/${VERSION}/kyverno-cli_${VERSION}_linux_x86_64.tar.gz"
           tar -xzf kyverno.tar.gz kyverno && sudo mv kyverno /usr/local/bin/ && rm kyverno.tar.gz
@@ -49,7 +49,7 @@ jobs:
       - name: Contrôle des politiques
         run: |
           kustomize build apps/app-demo/overlays/${{ inputs.vers }} > /tmp/manifestes.yaml
-          kyverno apply policies/kyverno/ --resource /tmp/manifestes.yaml
+          kyverno apply policies/kyverno/ --resource /tmp/manifestes.yaml --values-file policies/tests/valeurs-ci.yaml
 
       - name: Pull request et fusion
         env:

@@ -1,0 +1,59 @@
+# Moteur de politiques ; métriques activées seulement si la supervision l'est aussi
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kyverno
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-2'
+spec:
+  goTemplate: true
+  goTemplateOptions:
+  - missingkey=error
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          enable_kyverno: 'true'
+  template:
+    metadata:
+      name: kyverno
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true
+    spec:
+      project: platform
+      source:
+        repoURL: https://kyverno.github.io/kyverno/
+        chart: kyverno
+        targetRevision: 3.9.2
+        helm:
+          values: |
+            admissionController:
+              replicas: 3
+              serviceMonitor: { enabled: {{ eq (index .metadata.labels "enable_supervision") "true" }} }
+            backgroundController:
+              replicas: 2
+              serviceMonitor: { enabled: {{ eq (index .metadata.labels "enable_supervision") "true" }} }
+            reportsController:
+              replicas: 2
+              serviceMonitor: { enabled: {{ eq (index .metadata.labels "enable_supervision") "true" }} }
+            cleanupController:
+              replicas: 2
+            features:
+              policyExceptions: { enabled: true, namespace: kyverno }
+      destination:
+        server: '{{.server}}'
+        namespace: kyverno
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        - ServerSideApply=true
+        retry:
+          limit: 10
+          backoff:
+            duration: 30s
+            factor: 2
+            maxDuration: 5m
