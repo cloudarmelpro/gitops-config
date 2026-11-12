@@ -8,10 +8,10 @@ metadata:
 spec:
   ingressClassName: traefik
   tls:
-    - hosts: [prod.elyse-gitops.duckdns.org]
+    - hosts: [prod.elyse-cloud.duckdns.org]
       secretName: app-demo-tls
   rules:
-    - host: prod.elyse-gitops.duckdns.org
+    - host: prod.elyse-cloud.duckdns.org
       http:
         paths:
           - path: /
