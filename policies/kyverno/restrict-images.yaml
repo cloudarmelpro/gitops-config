@@ -9,7 +9,7 @@ spec:
     - name: require-image-tag
       match:
         any:
-          - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+          - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       validate:
         failureAction: Audit
         message: "Chaque image doit avoir une étiquette explicite."
@@ -20,7 +20,7 @@ spec:
     - name: disallow-latest-tag
       match:
         any:
-          - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+          - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       validate:
         failureAction: Audit
         message: "L'étiquette 'latest' est interdite."
@@ -31,7 +31,7 @@ spec:
     - name: allowed-registry
       match:
         any:
-          - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+          - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       # Le registre autorisé est fourni par Terraform (ConfigMap kube-system/parametres-plateforme) :
       # aucune valeur propre au compte AWS n'est écrite dans Git.
       context:

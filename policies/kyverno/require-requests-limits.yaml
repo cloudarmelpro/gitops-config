@@ -11,7 +11,7 @@ spec:
         any:
           - resources:
               kinds: [Pod]
-              namespaces: ["demo-*"]
+              namespaces: ["*-dev", "*-staging", "*-prod"]
       validate:
         failureAction: Audit
         message: "Chaque conteneur doit déclarer requests (cpu, mémoire) et une limite mémoire."

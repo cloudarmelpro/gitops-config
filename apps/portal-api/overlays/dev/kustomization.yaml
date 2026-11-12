@@ -1,13 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: demo-dev
+namespace: portal-api-dev
 resources:
 - ../../base
 - ingress.yaml
 - external-secret.yaml
 images:
-- name: app-demo
-  newName: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo
+- name: portal-api
+  newName: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api
   newTag: a-remplacer-par-la-ci
 patches:
 - patch: |-
@@ -16,5 +16,5 @@ patches:
       value: 1
   target:
     kind: Deployment
-    name: app-demo
+    name: portal-api
 - path: secret-env-patch.yaml

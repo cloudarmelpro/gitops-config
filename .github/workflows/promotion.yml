@@ -3,6 +3,11 @@ name: promotion
 on:
   workflow_dispatch:
     inputs:
+      application:
+        description: "Application à promouvoir (dossier de apps/)"
+        type: string
+        default: portal-api
+        required: true
       vers:
         description: "Environnement cible"
         type: choice
@@ -26,7 +31,7 @@ jobs:
         id: version
         run: |
           case "${{ inputs.vers }}" in staging) src=dev ;; prod) src=staging ;; esac
-          image=$(yq '.images[0].newName + ":" + .images[0].newTag' apps/app-demo/overlays/$src/kustomization.yaml)
+          image=$(yq '.images[0].newName + ":" + .images[0].newTag' apps/${{ inputs.application }}/overlays/$src/kustomization.yaml)
           echo "source=$src"   >> "$GITHUB_OUTPUT"
           echo "image=$image"  >> "$GITHUB_OUTPUT"
           echo "tag=${image##*:}" >> "$GITHUB_OUTPUT"
@@ -34,8 +39,8 @@ jobs:
 
       - name: Mise à jour de l'overlay
         run: |
-          cd apps/app-demo/overlays/${{ inputs.vers }}
-          kustomize edit set image app-demo=${{ steps.version.outputs.image }}
+          cd apps/${{ inputs.application }}/overlays/${{ inputs.vers }}
+          kustomize edit set image ${{ inputs.application }}=${{ steps.version.outputs.image }}
 
       - name: Installer Kyverno CLI (version du cluster)
         env:
@@ -48,7 +53,7 @@ jobs:
 
       - name: Contrôle des politiques
         run: |
-          kustomize build apps/app-demo/overlays/${{ inputs.vers }} > /tmp/manifestes.yaml
+          kustomize build apps/${{ inputs.application }}/overlays/${{ inputs.vers }} > /tmp/manifestes.yaml
           kyverno apply policies/kyverno/ --resource /tmp/manifestes.yaml --values-file policies/tests/valeurs-ci.yaml
 
       - name: Pull request et fusion
@@ -56,8 +61,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet; then echo "${{ inputs.vers }} est déjà à jour."; exit 0; fi
-          BRANCHE="promotion-${{ inputs.vers }}-${{ steps.version.outputs.tag }}"
-          MESSAGE="deploy(${{ inputs.vers }}): app-demo ${{ steps.version.outputs.tag }} (promue depuis ${{ steps.version.outputs.source }})"
+          BRANCHE="promotion-${{ inputs.application }}-${{ inputs.vers }}-${{ steps.version.outputs.tag }}"
+          MESSAGE="deploy(${{ inputs.vers }}): ${{ inputs.application }} ${{ steps.version.outputs.tag }} (promue depuis ${{ steps.version.outputs.source }})"
           git config user.name  "ci-bot"
           git config user.email "ci-bot@users.noreply.github.com"
           git switch -c "$BRANCHE"

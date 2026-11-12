@@ -1,4 +1,4 @@
-# gitops-config
+# uaa-platform-gitops
 
 État souhaité du cluster EKS, appliqué par ArgoCD.
 
@@ -8,7 +8,7 @@
 | `bootstrap/apps/` | Applications actives de la plateforme |
 | `bootstrap/a-activer/` | Applications activées au fil du ROADMAP |
 | `projects/` | AppProjects ArgoCD |
-| `apps/app-demo/` | Manifestes de l'application (base + overlays dev, staging, prod) |
+| `apps/portal-api/` | Manifestes de l'application (base + overlays dev, staging, prod) |
 | `platform/` | Configuration de la plateforme (ClusterSecretStore…) |
 | `policies/kyverno/` | Catalogue de politiques et exceptions |
 | `policies/tests/` | Tests `kyverno test` |

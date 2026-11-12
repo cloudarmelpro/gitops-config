@@ -10,7 +10,7 @@ spec:
     - name: drop-capabilities
       match:
         any:
-          - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+          - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       mutate:
         patchStrategicMerge:
           spec:

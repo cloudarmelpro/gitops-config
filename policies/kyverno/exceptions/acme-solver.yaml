@@ -17,5 +17,5 @@ spec:
     any:
       - resources:
           kinds: [Pod]
-          namespaces: ["demo-*"]
+          namespaces: ["*-dev", "*-staging", "*-prod"]
           names: ["cm-acme-http-solver-*"]

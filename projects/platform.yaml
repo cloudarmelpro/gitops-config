@@ -6,7 +6,7 @@ metadata:
 spec:
   description: Composants de la plateforme (Kyverno, secrets, supervision)
   sourceRepos:
-    - https://github.com/cloudarmelpro/gitops-config.git
+    - https://github.com/cloudarmelpro/uaa-platform-gitops.git
     - https://kyverno.github.io/kyverno/
     - https://charts.external-secrets.io
     - https://prometheus-community.github.io/helm-charts

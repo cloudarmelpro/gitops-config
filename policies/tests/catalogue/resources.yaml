@@ -3,13 +3,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-conforme
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: true, allowPrivilegeEscalation: false }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -19,13 +19,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-privilegie
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { privileged: true, readOnlyRootFilesystem: true }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -35,12 +35,12 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-root
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: true }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -50,14 +50,14 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-host-network
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   hostNetwork: true
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: true }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -67,7 +67,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-host-path
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
@@ -76,7 +76,7 @@ spec:
       hostPath: { path: /etc }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: true }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -86,26 +86,26 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-sans-limites
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: true }
 ---
 apiVersion: v1
 kind: Pod
 metadata:
   name: pod-latest
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:latest
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:latest
       securityContext: { readOnlyRootFilesystem: true }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -115,7 +115,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-registre-externe
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
@@ -131,13 +131,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-ecriture-racine
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test, owner: dsin }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: false }
       resources:
         requests: { cpu: 50m, memory: 64Mi }
@@ -147,13 +147,13 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: pod-sans-labels
-  namespace: demo-dev
+  namespace: portal-api-dev
   labels: { app.kubernetes.io/name: test }
 spec:
   securityContext: { runAsNonRoot: true, runAsUser: 10001 }
   containers:
     - name: app
-      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo:sha-test
+      image: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api:sha-test
       securityContext: { readOnlyRootFilesystem: true }
       resources:
         requests: { cpu: 50m, memory: 64Mi }

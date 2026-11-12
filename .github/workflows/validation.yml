@@ -23,7 +23,10 @@ jobs:
 
       - name: Manifestes conformes aux politiques
         run: |
-          for env in dev staging prod; do
-            kustomize build apps/app-demo/overlays/$env > /tmp/$env.yaml
-            kyverno apply policies/kyverno/ --resource /tmp/$env.yaml --values-file policies/tests/valeurs-ci.yaml
+          for app in apps/*/; do
+            for env in dev staging prod; do
+              echo "== $(basename "$app") ($env)"
+              kustomize build "${app}overlays/$env" > /tmp/manifestes.yaml
+              kyverno apply policies/kyverno/ --resource /tmp/manifestes.yaml --values-file policies/tests/valeurs-ci.yaml
+            done
           done
