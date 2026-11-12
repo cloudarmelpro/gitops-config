@@ -1,4 +1,5 @@
-# Point d'entrée HTTPS ; sous-réseaux et IP fixes (une par zone) viennent des métadonnées écrites par Terraform
+# Point d'entrée HTTPS. Mode « nlb » : NLB avec une IP fixe par zone ; mode « noeud » : ports 80/443 du nœud d'entrée.
+# Le mode, les sous-réseaux et les IP viennent des métadonnées écrites par Terraform (secret du cluster).
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -26,6 +27,38 @@ spec:
         targetRevision: 42.3.0
         helm:
           values: |
+            {{ if eq (index .metadata.annotations "entree_mode") "noeud" }}
+            # Mode « noeud » (compte sans Elastic Load Balancing) : Traefik écoute directement sur les
+            # ports 80/443 du nœud d'entrée, qui porte l'IP fixe ; une seule réplique (ports de l'hôte).
+            deployment:
+              replicas: 1
+            updateStrategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxUnavailable: 1
+                maxSurge: 0
+            nodeSelector:
+              role: entree
+            tolerations:
+              - key: role
+                operator: Equal
+                value: entree
+                effect: NoSchedule
+            ports:
+              web:
+                hostPort: 80
+              websecure:
+                hostPort: 443
+            service:
+              spec:
+                type: ClusterIP
+            providers:
+              kubernetesIngress:
+                publishedService:
+                  enabled: false
+                ingressEndpoint:
+                  ip: "{{ index .metadata.annotations "entree_ip" }}"
+            {{ else }}
             deployment:
               replicas: 2
             topologySpreadConstraints:
@@ -47,6 +80,7 @@ spec:
                 service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ index .metadata.annotations "entree_subnets" }}"
                 service.beta.kubernetes.io/aws-load-balancer-eip-allocations: "{{ index .metadata.annotations "entree_eip_allocations" }}"
                 service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
+            {{ end }}
       destination:
         server: '{{.server}}'
         namespace: traefik
