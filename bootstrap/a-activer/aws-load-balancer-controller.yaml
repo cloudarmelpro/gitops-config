@@ -15,7 +15,7 @@ spec:
     helm:
       valuesObject:
         clusterName: gitops-dev
-        region: eu-west-3
+        region: us-east-1
         serviceAccount:
           create: true
           name: aws-load-balancer-controller
