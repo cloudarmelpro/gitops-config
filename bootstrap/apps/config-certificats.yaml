@@ -21,7 +21,7 @@ spec:
     spec:
       project: platform
       source:
-        repoURL: https://github.com/cloudarmelpro/gitops-config.git
+        repoURL: https://github.com/cloudarmelpro/uaa-platform-gitops.git
         targetRevision: main
         path: platform/cert-manager
         directory:

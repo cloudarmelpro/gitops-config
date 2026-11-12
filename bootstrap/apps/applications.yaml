@@ -1,0 +1,47 @@
+# Déploie automatiquement chaque application du dossier apps/ dans chaque environnement.
+# Ajouter une application = créer apps/<nom>/base et apps/<nom>/overlays/{dev,staging,prod} :
+# elle apparaît alors sous le nom <nom>-<env>, dans l'espace de noms <nom>-<env>.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: applications
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/cloudarmelpro/uaa-platform-gitops.git
+              revision: main
+              directories:
+                - path: apps/*
+          - list:
+              elements:
+                - env: dev
+                - env: staging
+                - env: prod
+  template:
+    metadata:
+      name: '{{.path.basename}}-{{.env}}'
+      labels:
+        application: '{{.path.basename}}'
+        environnement: '{{.env}}'
+    spec:
+      project: applications
+      source:
+        repoURL: https://github.com/cloudarmelpro/uaa-platform-gitops.git
+        targetRevision: main
+        path: 'apps/{{.path.basename}}/overlays/{{.env}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.path.basename}}-{{.env}}'
+      syncPolicy:
+        automated: { prune: true, selfHeal: true }
+        syncOptions: [CreateNamespace=true]
+        retry:
+          limit: 10
+          backoff: { duration: 30s, factor: 2, maxDuration: 5m }

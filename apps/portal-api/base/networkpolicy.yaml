@@ -6,7 +6,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: app-demo
+      app.kubernetes.io/name: portal-api
   policyTypes: [Ingress]
   ingress:
     - ports:

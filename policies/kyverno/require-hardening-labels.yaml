@@ -9,7 +9,7 @@ spec:
     - name: read-only-root-filesystem
       match:
         any:
-          - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+          - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       validate:
         failureAction: Audit
         message: "readOnlyRootFilesystem doit valoir true."
@@ -21,7 +21,7 @@ spec:
     - name: required-labels
       match:
         any:
-          - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+          - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       validate:
         failureAction: Audit
         message: "Les labels 'app.kubernetes.io/name' et 'owner' sont obligatoires."

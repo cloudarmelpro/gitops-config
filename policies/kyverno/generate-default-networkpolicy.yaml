@@ -1,4 +1,4 @@
-# Politique 10 : NetworkPolicy de refus par défaut dans chaque espace demo-*
+# Politique 10 : NetworkPolicy de refus par défaut dans chaque espace applicatif (*-dev, *-staging, *-prod)
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -23,7 +23,7 @@ spec:
         any:
           - resources:
               kinds: [Namespace]
-              names: ["demo-*"]
+              names: ["*-dev", "*-staging", "*-prod"]
       generate:
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
@@ -39,7 +39,7 @@ spec:
         any:
           - resources:
               kinds: [Namespace]
-              names: ["demo-*"]
+              names: ["*-dev", "*-staging", "*-prod"]
       generate:
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
