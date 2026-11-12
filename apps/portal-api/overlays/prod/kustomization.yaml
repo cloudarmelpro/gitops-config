@@ -2,9 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: portal-api-prod
 resources:
-  - ../../base
-  - ingress.yaml
+- ../../base
+- ingress.yaml
 images:
-  - name: portal-api
-    newName: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api
-    newTag: "a-remplacer-par-la-ci"
+- name: portal-api
+  newName: 181975986285.dkr.ecr.us-east-1.amazonaws.com/uaa/portal-api
+  newTag: sha-0c141ac
