@@ -6,5 +6,5 @@ resources:
   - ingress.yaml
 images:
   - name: app-demo
-    newName: <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/app-demo
+    newName: 181975986285.dkr.ecr.us-east-1.amazonaws.com/app-demo
     newTag: "a-remplacer-par-la-ci"
