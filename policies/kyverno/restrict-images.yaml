@@ -38,6 +38,6 @@ spec:
         pattern:
           spec:
             =(initContainers):
-              - image: "<ACCOUNT_ID>.dkr.ecr.eu-west-3.amazonaws.com/*"
+              - image: "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/*"
             containers:
-              - image: "<ACCOUNT_ID>.dkr.ecr.eu-west-3.amazonaws.com/*"
+              - image: "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/*"
