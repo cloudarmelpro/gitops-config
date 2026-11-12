@@ -34,10 +34,10 @@ spec:
           - resources: { kinds: [Pod], namespaces: ["demo-*"] }
       validate:
         failureAction: Audit
-        message: "Seules les images du registre ECR de l'université (ou de son miroir GHCR pour la démonstration) sont autorisées."
+        message: "Seules les images du registre ECR de l'université sont autorisées."
         pattern:
           spec:
             =(initContainers):
-              - image: "<ACCOUNT_ID>.dkr.ecr.eu-west-3.amazonaws.com/* | ghcr.io/cloudarmelpro/*"
+              - image: "<ACCOUNT_ID>.dkr.ecr.eu-west-3.amazonaws.com/*"
             containers:
-              - image: "<ACCOUNT_ID>.dkr.ecr.eu-west-3.amazonaws.com/* | ghcr.io/cloudarmelpro/*"
+              - image: "<ACCOUNT_ID>.dkr.ecr.eu-west-3.amazonaws.com/*"

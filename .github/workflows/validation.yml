@@ -23,7 +23,7 @@ jobs:
 
       - name: Manifestes conformes aux politiques
         run: |
-          for env in dev staging prod ovh; do
+          for env in dev staging prod; do
             kustomize build apps/app-demo/overlays/$env > /tmp/$env.yaml
             kyverno apply policies/kyverno/ --resource /tmp/$env.yaml
           done
