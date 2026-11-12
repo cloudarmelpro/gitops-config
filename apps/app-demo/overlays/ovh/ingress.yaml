@@ -1,0 +1,20 @@
+# Publication de la démonstration OVH en HTTPS (sous-domaine DuckDNS distinct de celui d'AWS)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-demo
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [elyse-ovh.duckdns.org]
+      secretName: app-demo-tls
+  rules:
+    - host: elyse-ovh.duckdns.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: app-demo, port: { number: 80 } }

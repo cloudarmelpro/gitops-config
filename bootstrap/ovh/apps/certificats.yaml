@@ -1,0 +1,18 @@
+# Autorité Let's Encrypt (même fichier que sur EKS : platform/cert-manager)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: certificats
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: platform
+  source:
+    repoURL: https://github.com/cloudarmelpro/gitops-config.git
+    targetRevision: main
+    path: platform/cert-manager
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
