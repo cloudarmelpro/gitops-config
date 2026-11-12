@@ -1,0 +1,64 @@
+# Point d'entrée HTTPS ; sous-réseaux et IP fixes (une par zone) viennent des métadonnées écrites par Terraform
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: traefik
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+spec:
+  goTemplate: true
+  goTemplateOptions:
+  - missingkey=error
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          enable_traefik: 'true'
+  template:
+    metadata:
+      name: traefik
+    spec:
+      project: platform
+      source:
+        repoURL: https://traefik.github.io/charts
+        chart: traefik
+        targetRevision: 42.3.0
+        helm:
+          values: |
+            deployment:
+              replicas: 2
+            topologySpreadConstraints:
+              - maxSkew: 1
+                topologyKey: topology.kubernetes.io/zone
+                whenUnsatisfiable: ScheduleAnyway
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: traefik
+            providers:
+              kubernetesIngress:
+                publishedService:
+                  enabled: true
+            service:
+              annotations:
+                service.beta.kubernetes.io/aws-load-balancer-type: external
+                service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+                service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+                service.beta.kubernetes.io/aws-load-balancer-subnets: "{{ index .metadata.annotations "entree_subnets" }}"
+                service.beta.kubernetes.io/aws-load-balancer-eip-allocations: "{{ index .metadata.annotations "entree_eip_allocations" }}"
+                service.beta.kubernetes.io/aws-load-balancer-attributes: load_balancing.cross_zone.enabled=true
+      destination:
+        server: '{{.server}}'
+        namespace: traefik
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - CreateNamespace=true
+        retry:
+          limit: 10
+          backoff:
+            duration: 30s
+            factor: 2
+            maxDuration: 5m

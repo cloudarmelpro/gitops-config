@@ -8,11 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Installer Kyverno CLI (dernière version)
+      - name: Installer Kyverno CLI (version du cluster)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VERSION=$(gh release view -R kyverno/kyverno --json tagName -q .tagName)
+          VERSION=v1.19.2   # même version que le chart Kyverno 3.9.2 du cluster (la v1.20 n'exécute plus les ClusterPolicy)
           curl -sSL -o kyverno.tar.gz \
             "https://github.com/kyverno/kyverno/releases/download/${VERSION}/kyverno-cli_${VERSION}_linux_x86_64.tar.gz"
           tar -xzf kyverno.tar.gz kyverno && sudo mv kyverno /usr/local/bin/
@@ -25,5 +25,5 @@ jobs:
         run: |
           for env in dev staging prod; do
             kustomize build apps/app-demo/overlays/$env > /tmp/$env.yaml
-            kyverno apply policies/kyverno/ --resource /tmp/$env.yaml
+            kyverno apply policies/kyverno/ --resource /tmp/$env.yaml --values-file policies/tests/valeurs-ci.yaml
           done

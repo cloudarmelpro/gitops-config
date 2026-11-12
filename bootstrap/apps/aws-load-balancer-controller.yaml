@@ -1,0 +1,47 @@
+# Crée le NLB public ; cluster, région et VPC viennent des métadonnées écrites par Terraform
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: aws-load-balancer-controller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '-3'
+spec:
+  goTemplate: true
+  goTemplateOptions:
+  - missingkey=error
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          enable_aws_load_balancer_controller: 'true'
+  template:
+    metadata:
+      name: aws-load-balancer-controller
+    spec:
+      project: platform
+      source:
+        repoURL: https://aws.github.io/eks-charts
+        chart: aws-load-balancer-controller
+        targetRevision: 3.6.2
+        helm:
+          values: |
+            clusterName: {{ index .metadata.annotations "cluster_name" }}
+            region: {{ index .metadata.annotations "aws_region" }}
+            vpcId: {{ index .metadata.annotations "aws_vpc_id" }}
+            serviceAccount:
+              create: true
+              name: aws-load-balancer-controller
+      destination:
+        server: '{{.server}}'
+        namespace: kube-system
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 10
+          backoff:
+            duration: 30s
+            factor: 2
+            maxDuration: 5m

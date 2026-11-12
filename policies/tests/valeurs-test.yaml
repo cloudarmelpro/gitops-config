@@ -1,0 +1,9 @@
+# Valeurs fournies aux tests à la place de la ConfigMap créée par Terraform dans le cluster
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Values
+policies:
+  - name: restrict-images
+    rules:
+      - name: allowed-registry
+        values:
+          parametres.data.registre_ecr: "123456789012.dkr.ecr.us-east-1.amazonaws.com"

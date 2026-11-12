@@ -1,0 +1,10 @@
+# Valeurs utilisées par « kyverno apply » dans la CI : tout registre ECR est accepté pour vérifier la structure
+# des manifestes ; dans le cluster, seul le registre du compte (ConfigMap de Terraform) est autorisé.
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Values
+policies:
+  - name: restrict-images
+    rules:
+      - name: allowed-registry
+        values:
+          parametres.data.registre_ecr: "*.dkr.ecr.*.amazonaws.com"

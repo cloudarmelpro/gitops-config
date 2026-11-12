@@ -1,0 +1,40 @@
+# Autorité Let's Encrypt
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: config-certificats
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'
+spec:
+  goTemplate: true
+  goTemplateOptions:
+  - missingkey=error
+  generators:
+  - clusters:
+      selector:
+        matchLabels:
+          enable_cert_manager: 'true'
+  template:
+    metadata:
+      name: config-certificats
+    spec:
+      project: platform
+      source:
+        repoURL: https://github.com/cloudarmelpro/gitops-config.git
+        targetRevision: main
+        path: platform/cert-manager
+        directory:
+          recurse: true
+      destination:
+        server: '{{.server}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 10
+          backoff:
+            duration: 30s
+            factor: 2
+            maxDuration: 5m

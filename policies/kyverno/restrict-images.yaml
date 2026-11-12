@@ -32,12 +32,19 @@ spec:
       match:
         any:
           - resources: { kinds: [Pod], namespaces: ["demo-*"] }
+      # Le registre autorisé est fourni par Terraform (ConfigMap kube-system/parametres-plateforme) :
+      # aucune valeur propre au compte AWS n'est écrite dans Git.
+      context:
+        - name: parametres
+          configMap:
+            name: parametres-plateforme
+            namespace: kube-system
       validate:
         failureAction: Audit
         message: "Seules les images du registre ECR de l'université sont autorisées."
         pattern:
           spec:
             =(initContainers):
-              - image: "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/*"
+              - image: "{{ parametres.data.registre_ecr }}/*"
             containers:
-              - image: "<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/*"
+              - image: "{{ parametres.data.registre_ecr }}/*"

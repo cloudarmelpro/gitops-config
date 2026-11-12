@@ -10,6 +10,7 @@ policies:
   - ../../kyverno/require-requests-limits.yaml
   - ../../kyverno/restrict-images.yaml
   - ../../kyverno/require-hardening-labels.yaml
+variables: ../valeurs-test.yaml
 resources:
   - resources.yaml
 results:
