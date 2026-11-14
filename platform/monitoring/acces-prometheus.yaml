@@ -1,0 +1,47 @@
+# Accès public à Prometheus, protégé par mot de passe : Prometheus n'a pas d'authentification propre,
+# Traefik demande un identifiant (middleware basicAuth) avant de transmettre la requête.
+# Le mot de passe est généré dans le cluster par External Secrets (générateur Password) : il n'est
+# jamais écrit dans Git. Lecture :
+#   kubectl -n monitoring get secret prometheus-acces -o jsonpath='{.data.password}' | base64 -d
+apiVersion: generators.external-secrets.io/v1alpha1
+kind: Password
+metadata:
+  name: prometheus-acces
+  namespace: monitoring
+spec:
+  length: 24
+  digits: 6
+  symbols: 0
+  noUpper: false
+  allowRepeat: true
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: prometheus-acces
+  namespace: monitoring
+spec:
+  refreshInterval: "0"          # généré une seule fois, pas de rotation automatique
+  target:
+    name: prometheus-acces
+    template:
+      type: kubernetes.io/basic-auth
+      data:
+        username: admin
+        password: "{{ .password }}"
+  dataFrom:
+    - sourceRef:
+        generatorRef:
+          apiVersion: generators.external-secrets.io/v1alpha1
+          kind: Password
+          name: prometheus-acces
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: prometheus-auth
+  namespace: monitoring
+spec:
+  basicAuth:
+    secret: prometheus-acces
+    realm: Prometheus UAA
