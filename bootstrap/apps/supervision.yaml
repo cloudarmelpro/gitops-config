@@ -28,6 +28,21 @@ spec:
         targetRevision: 92.17.0
         helm:
           valuesObject:
+            # Grafana publié en HTTPS (mot de passe administrateur aléatoire) ; Prometheus et
+            # Alertmanager, sans authentification, restent internes et se consultent via Grafana.
+            grafana:
+              ingress:
+                enabled: true
+                ingressClassName: traefik
+                annotations:
+                  cert-manager.io/cluster-issuer: letsencrypt
+                hosts: [grafana.elyse-cloud.duckdns.org]
+                tls:
+                - secretName: grafana-tls
+                  hosts: [grafana.elyse-cloud.duckdns.org]
+              grafana.ini:
+                server:
+                  root_url: https://grafana.elyse-cloud.duckdns.org
             prometheus:
               prometheusSpec:
                 serviceMonitorSelectorNilUsesHelmValues: false
