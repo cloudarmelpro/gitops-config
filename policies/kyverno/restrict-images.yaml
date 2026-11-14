@@ -11,7 +11,7 @@ spec:
         any:
           - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       validate:
-        failureAction: Audit
+        failureAction: Enforce
         message: "Chaque image doit avoir une étiquette explicite."
         pattern:
           spec:
@@ -22,7 +22,7 @@ spec:
         any:
           - resources: { kinds: [Pod], namespaces: ["*-dev", "*-staging", "*-prod"] }
       validate:
-        failureAction: Audit
+        failureAction: Enforce
         message: "L'étiquette 'latest' est interdite."
         pattern:
           spec:
@@ -40,7 +40,7 @@ spec:
             name: parametres-plateforme
             namespace: kube-system
       validate:
-        failureAction: Audit
+        failureAction: Enforce
         message: "Seules les images du registre ECR de l'université sont autorisées."
         pattern:
           spec:
